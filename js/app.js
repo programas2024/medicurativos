@@ -1,3 +1,4 @@
+// Hacer temaPrincipal global
 // ===== BASE DE DATOS =====
 const temas = [
     // Valores (11 temas)
@@ -49,7 +50,6 @@ const categorias = [
     { id: 'emociones', nombre: 'Emociones', icono: 'fa-heart', color: '#c44569', colorFondo: '#822b4a' },
     { id: 'liderazgo', nombre: 'Liderazgo', icono: 'fa-crown', color: '#0e7c5c', colorFondo: '#064e39' },
     { id: 'especial', nombre: 'Especiales', icono: 'fa-calendar-star', color: '#e67e22', colorFondo: '#a55c17' },
-    // NUEVA CATEGORÍA GALERÍA
     { id: 'galeria', nombre: 'Galería', icono: 'fa-images', color: '#9b59b6', colorFondo: '#4a2360' }
 ];
 
@@ -57,14 +57,75 @@ const categorias = [
 const menuHorizontal = document.getElementById('menuHorizontal');
 const temaPrincipal = document.getElementById('temaPrincipal');
 
-// ===== FUNCIONES =====
+// Hacer temaPrincipal global para otros scripts
+window.temaPrincipal = temaPrincipal;
+window.categorias = categorias; // Hacer categorias global
+
+// ===== FUNCIÓN DE ZOOM PARA IMÁGENES =====
+window.abrirImagenZoom = function(url, titulo) {
+    Swal.fire({
+        imageUrl: url,
+        imageAlt: titulo,
+        title: titulo,
+        showCloseButton: true,
+        showConfirmButton: false,
+        customClass: {
+            popup: 'swal-popup-redondo'
+        }
+    });
+};
+
+// ===== DETECTAR SI ES MÓVIL =====
+function isMobile() {
+    return window.innerWidth <= 768;
+}
+
+// ===== FUNCIÓN PARA MOSTRAR TEMAS DE UNA CATEGORÍA EN SWEETALERT (MÓVIL) =====
+window.mostrarTemasCategoriaMobile = function(categoria) {
+    const temasCat = temas.filter(t => t.cat === categoria.id);
+    
+    let temasHTML = '<div style="max-height: 400px; overflow-y: auto; padding: 5px; scrollbar-width: none;">';
+    
+    temasCat.forEach(tema => {
+        temasHTML += `
+            <div onclick="seleccionarTemaDesdeAlert(${tema.id})" 
+                 style="display: flex; align-items: center; gap: 15px; padding: 15px; margin: 8px 0; 
+                        background: #f8f2ff; border-radius: 40px; cursor: pointer; 
+                        border-left: 6px solid ${categoria.color}; transition: 0.2s;">
+                <i class="fas ${tema.icono}" style="font-size: 24px; color: ${categoria.color}; width: 30px;"></i>
+                <span style="font-size: 16px; font-weight: 500; color: #1d1a2f;">${tema.nombre}</span>
+            </div>
+        `;
+    });
+    
+    temasHTML += '</div>';
+    
+    Swal.fire({
+        title: `<span style="font-size: 24px; font-weight: 600; color: ${categoria.color};">${categoria.nombre}</span>`,
+        html: temasHTML,
+        showCloseButton: true,
+        showConfirmButton: false,
+        background: '#fff9ff',
+        customClass: {
+            popup: 'swal-popup-categoria'
+        },
+        width: '90%'
+    });
+};
+
+// ===== SELECCIONAR TEMA DESDE EL ALERT =====
+window.seleccionarTemaDesdeAlert = function(id) {
+    Swal.close();
+    const tema = temas.find(t => t.id === id);
+    if (tema) mostrarTema(tema);
+};
+
+// ===== FUNCIÓN PARA MOSTRAR TEMA =====
 function mostrarTema(tema) {
     if (tema.cat === 'galeria') {
-        // Si es galería, llamar a la función de galeria.js
-        if (typeof mostrarGaleria === 'function') {
-            mostrarGaleria();
+        if (typeof window.mostrarGaleria === 'function') {
+            window.mostrarGaleria();
         } else {
-            console.error('Error: mostrarGaleria no está definida');
             temaPrincipal.innerHTML = '<div class="placeholder-text"><i class="fas fa-exclamation-triangle"></i><p>Error al cargar la galería</p></div>';
         }
         return;
@@ -82,6 +143,7 @@ function mostrarTema(tema) {
     temaPrincipal.style.borderLeftColor = colorBorde;
 }
 
+// ===== FUNCIÓN PARA CERRAR SUBMENÚS =====
 function cerrarTodosSubmenus() {
     document.querySelectorAll('.submenu').forEach(sub => {
         sub.classList.remove('mostrar');
@@ -91,61 +153,82 @@ function cerrarTodosSubmenus() {
     });
 }
 
-function construirMenu() {
+// ===== FUNCIÓN PARA CONSTRUIR MENÚ ADAPTABLE =====
+function construirMenuAdaptable() {
     let html = '';
+    const mobile = isMobile();
     
     categorias.forEach(cat => {
         if (cat.id === 'galeria') {
-            // Para galería, crear un submenú especial
-            html += `
-                <div class="menu-item" data-cat="${cat.id}">
-                    <button class="menu-btn" onclick="toggleSubmenu('${cat.id}')">
-                        <i class="fas ${cat.icono}"></i>
+            if (mobile) {
+                // 📱 MÓVIL: SweetAlert con 3 botones
+                html += `
+                    <button class="menu-btn-categoria" onclick="window.mostrarGaleria()"
+                            style="border-left: 5px solid ${cat.color};">
+                        <i class="fas ${cat.icono}" style="color: ${cat.color};"></i>
                         <span>${cat.nombre}</span>
                     </button>
-                    <div class="submenu ${cat.id}" id="submenu-${cat.id}" style="border-color: ${cat.color}">
-                        <div class="tema-link" onclick="seleccionarTema(999)">
-                            <i class="fas fa-images" style="color: ${cat.color}"></i>
-                            <span>Ver galería completa</span>
-                        </div>
-                        <div class="tema-link" onclick="seleccionarTema(998)">
-                            <i class="fas fa-star" style="color: ${cat.color}"></i>
-                            <span>Destacados</span>
-                        </div>
-                        <div class="tema-link" onclick="seleccionarTema(997)">
-                            <i class="fas fa-clock" style="color: ${cat.color}"></i>
-                            <span>Recientes</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        } else {
-            // Para categorías normales
-            const temasCat = temas.filter(t => t.cat === cat.id);
-            
-            html += `
-                <div class="menu-item" data-cat="${cat.id}">
-                    <button class="menu-btn" onclick="toggleSubmenu('${cat.id}')">
-                        <i class="fas ${cat.icono}"></i>
-                        <span>${cat.nombre}</span>
-                    </button>
-                    <div class="submenu ${cat.id}" id="submenu-${cat.id}" style="border-color: ${cat.color}">
-                        ${temasCat.map(t => `
-                            <div class="tema-link" onclick="seleccionarTema(${t.id})">
-                                <i class="fas ${t.icono}" style="color: ${cat.color}"></i>
-                                <span>${t.nombre}</span>
+                `;
+            } else {
+                // 💻 PC: SUBMENÚ DESPLEGABLE (como las demás categorías)
+                html += `
+                    <div class="menu-item" data-cat="${cat.id}">
+                        <button class="menu-btn" onclick="toggleSubmenu('${cat.id}')">
+                            <i class="fas ${cat.icono}"></i>
+                            <span>${cat.nombre}</span>
+                        </button>
+                        <div class="submenu ${cat.id}" id="submenu-${cat.id}" style="border-color: ${cat.color}">
+                            <div class="tema-link" onclick="seleccionarTema(999)">
+                                <i class="fas fa-images" style="color: ${cat.color}"></i>
+                                <span>Ver galería completa</span>
                             </div>
-                        `).join('')}
+                            <div class="tema-link" onclick="seleccionarTema(998)">
+                                <i class="fas fa-star" style="color: ${cat.color}"></i>
+                                <span>Destacados</span>
+                            </div>
+                            <div class="tema-link" onclick="seleccionarTema(997)">
+                                <i class="fas fa-clock" style="color: ${cat.color}"></i>
+                                <span>Recientes</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
+        } else {
+            // Otras categorías (valores, crecimiento, etc.)
+            if (mobile) {
+                html += `
+                    <button class="menu-btn-categoria" onclick="window.mostrarTemasCategoriaMobile(${JSON.stringify(cat).replace(/"/g, '&quot;')})"
+                            style="border-left: 5px solid ${cat.color};">
+                        <i class="fas ${cat.icono}" style="color: ${cat.color};"></i>
+                        <span>${cat.nombre}</span>
+                    </button>
+                `;
+            } else {
+                const temasCat = temas.filter(t => t.cat === cat.id);
+                html += `
+                    <div class="menu-item" data-cat="${cat.id}">
+                        <button class="menu-btn" onclick="toggleSubmenu('${cat.id}')">
+                            <i class="fas ${cat.icono}"></i>
+                            <span>${cat.nombre}</span>
+                        </button>
+                        <div class="submenu ${cat.id}" id="submenu-${cat.id}" style="border-color: ${cat.color}">
+                            ${temasCat.map(t => `
+                                <div class="tema-link" onclick="seleccionarTema(${t.id})">
+                                    <i class="fas ${t.icono}" style="color: ${cat.color}"></i>
+                                    <span>${t.nombre}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
         }
     });
     
     menuHorizontal.innerHTML = html;
 }
-
-// Funciones globales para los onclick
+// ===== FUNCIONES PARA PC =====
 window.toggleSubmenu = function(catId) {
     const submenu = document.getElementById(`submenu-${catId}`);
     const btn = event.currentTarget;
@@ -162,49 +245,46 @@ window.toggleSubmenu = function(catId) {
 
 window.seleccionarTema = function(id) {
     if (id === 999) {
-        // ID especial para galería completa
-        if (typeof mostrarGaleria === 'function') {
-            mostrarGaleria();
+        if (typeof window.mostrarGaleria === 'function') {
+            window.mostrarGaleria();
         } else {
             temaPrincipal.innerHTML = '<div class="placeholder-text"><i class="fas fa-exclamation-triangle"></i><p>Error: Galería no disponible</p></div>';
         }
     } else if (id === 998) {
-        // Mostrar destacados CON ZOOM
         temaPrincipal.innerHTML = `
             <div class="galeria-container">
                 <h2 class="galeria-titulo"><i class="fas fa-star"></i> Destacados</h2>
                 <div class="galeria-grid">
-                    <div class="galeria-item" onclick="abrirImagenZoom('imganes/camalio.png', 'Cambia por tu bienestar')">
-                        <img src="imganes/camalio.png" alt="Cambia por tu bienestar" loading="lazy">
+                    <div class="galeria-item" onclick="window.abrirImagenZoom('imagenes/camalio.png', 'Cambia por tu bienestar')">
+                        <img src="imagenes/camalio.png" alt="Cambia por tu bienestar" loading="lazy">
                         <div class="galeria-caption"><i class="fas fa-search-plus"></i> Cambia por tu bienestar</div>
                     </div>
-                    <div class="galeria-item" onclick="abrirImagenZoom('imganes/gatoperro.jpeg', 'La lealtad')">
-                        <img src="imganes/gatoperro.jpeg" alt="la lealtad" loading="lazy">
+                    <div class="galeria-item" onclick="window.abrirImagenZoom('imagenes/gatoperro.jpeg', 'La lealtad')">
+                        <img src="imagenes/gatoperro.jpeg" alt="la lealtad" loading="lazy">
                         <div class="galeria-caption"><i class="fas fa-search-plus"></i> La lealtad</div>
                     </div>
-                    <div class="galeria-item" onclick="abrirImagenZoom('imganes/koala.jpeg', 'Constancia')">
-                        <img src="imganes/koala.jpeg" alt="constancia" loading="lazy">
+                    <div class="galeria-item" onclick="window.abrirImagenZoom('imagenes/koala.jpeg', 'Constancia')">
+                        <img src="imagenes/koala.jpeg" alt="constancia" loading="lazy">
                         <div class="galeria-caption"><i class="fas fa-search-plus"></i> Constancia</div>
                     </div>
                 </div>
             </div>
         `;
     } else if (id === 997) {
-        // Mostrar recientes CON ZOOM
         temaPrincipal.innerHTML = `
             <div class="galeria-container">
                 <h2 class="galeria-titulo"><i class="fas fa-clock"></i> Recientes</h2>
                 <div class="galeria-grid">
-                    <div class="galeria-item" onclick="abrirImagenZoom('imganes/cerdo.png', 'Valorate')">
-                        <img src="imganes/cerdo.png" alt="valorate" loading="lazy">
+                    <div class="galeria-item" onclick="window.abrirImagenZoom('imagenes/cerdo.png', 'Valorate')">
+                        <img src="imagenes/cerdo.png" alt="valorate" loading="lazy">
                         <div class="galeria-caption"><i class="fas fa-search-plus"></i> Valorate</div>
                     </div>
-                    <div class="galeria-item" onclick="abrirImagenZoom('imganes/gatoperro.jpeg', 'La lealtad')">
-                        <img src="imganes/gatoperro.jpeg" alt="La lealtad" loading="lazy">
+                    <div class="galeria-item" onclick="window.abrirImagenZoom('imagenes/gatoperro.jpeg', 'La lealtad')">
+                        <img src="imagenes/gatoperro.jpeg" alt="La lealtad" loading="lazy">
                         <div class="galeria-caption"><i class="fas fa-search-plus"></i> La lealtad</div>
                     </div>
-                    <div class="galeria-item" onclick="abrirImagenZoom('imganes/koala.jpeg', 'Constancia')">
-                        <img src="imganes/koala.jpeg" alt="Constancia" loading="lazy">
+                    <div class="galeria-item" onclick="window.abrirImagenZoom('imagenes/koala.jpeg', 'Constancia')">
+                        <img src="imagenes/koala.jpeg" alt="Constancia" loading="lazy">
                         <div class="galeria-caption"><i class="fas fa-search-plus"></i> Constancia</div>
                     </div>
                 </div>
@@ -217,39 +297,27 @@ window.seleccionarTema = function(id) {
     cerrarTodosSubmenus();
 };
 
-
-// ===== FUNCIÓN DE ZOOM PARA IMÁGENES =====
-function abrirImagenZoom(url, titulo) {
-    Swal.fire({
-        imageUrl: url,
-        imageAlt: titulo,
-        title: titulo,
-        showCloseButton: true,
-        showConfirmButton: false,
-        customClass: {
-            popup: 'swal-popup-redondo'
-        }
-    });
-}
-// Evento para cerrar menús al hacer clic fuera
+// ===== EVENTOS =====
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.menu-item')) {
         cerrarTodosSubmenus();
     }
 });
 
-// Eventos de los botones
+window.addEventListener('resize', function() {
+    construirMenuAdaptable();
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     const btnAyuda = document.getElementById('btnAyuda');
     const btnMision = document.getElementById('btnMision');
     const btnSoporte = document.getElementById('btnSoporte');
-    const btnAgradecimientos = document.getElementById('btnAgradecimientos'); // NUEVO
+    const btnAgradecimientos = document.getElementById('btnAgradecimientos');
     
-    if (btnAyuda) btnAyuda.addEventListener('click', mostrarAyuda);
-    if (btnMision) btnMision.addEventListener('click', mostrarMision);
-    if (btnSoporte) btnSoporte.addEventListener('click', mostrarSoporte);
-    if (btnAgradecimientos) btnAgradecimientos.addEventListener('click', mostrarAgradecimientos); //
+    if (btnAyuda) btnAyuda.addEventListener('click', window.mostrarAyuda);
+    if (btnMision) btnMision.addEventListener('click', window.mostrarMision);
+    if (btnSoporte) btnSoporte.addEventListener('click', window.mostrarSoporte);
+    if (btnAgradecimientos) btnAgradecimientos.addEventListener('click', window.mostrarAgradecimientos);
+    
+    construirMenuAdaptable();
 });
-
-// Inicializar
-construirMenu();

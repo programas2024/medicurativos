@@ -7,7 +7,7 @@
 
 body {
     background: #e6d9fc;
-    
+
     padding: 25px 20px;
     min-height: 100vh;
     display: flex;
@@ -390,4 +390,310 @@ body {
         height: 55px;
         font-size: 26px;
     }
+}
+
+
+
+/* ===== ESTILOS PARA MÓVIL ===== */
+.menu-btn-categoria {
+    background: white;
+    border: none;
+    border-radius: 60px;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(90, 60, 130, 0.1);
+    transition: all 0.2s ease;
+    border-left: 5px solid transparent;
+    flex: 1 1 auto;
+    min-width: 130px;
+    justify-content: center;
+}
+
+.menu-btn-categoria i {
+    font-size: 20px;
+}
+
+.menu-btn-categoria:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(155, 89, 182, 0.2);
+    background: #f8f2ff;
+}
+
+/* SweetAlert para móvil */
+.swal-popup-categoria {
+    border-radius: 40px !important;
+    border: 4px solid white !important;
+    padding: 20px 15px !important;
+}
+
+@media (max-width: 768px) {
+    .menu-horizontal {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .menu-btn-categoria {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-horizontal {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== CONTENEDOR DE CATEGORÍAS ===== */
+.categorias-contenedor {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+/* Botón hamburguesa para categorías (solo móvil) */
+.categorias-hamburguesa {
+    display: none;
+    width: 100%;
+    background: white;
+    border: none;
+    border-radius: 60px;
+    padding: 18px 25px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c1b4e;
+    cursor: pointer;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 5px 15px rgba(90,60,130,0.15);
+    border: 2px solid #e0d0f0;
+    margin-bottom: 20px;
+}
+
+.categorias-hamburguesa i {
+    font-size: 24px;
+    color: #9b59b6;
+}
+
+.categorias-hamburguesa:hover {
+    background: #f8f2ff;
+    border-color: #9b59b6;
+}
+
+/* ===== MENÚ DE CATEGORÍAS MÓVIL ===== */
+.menu-categorias-movil {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 85%;
+    max-width: 320px;
+    height: 100vh;
+    background: white;
+    z-index: 10000;
+    box-shadow: 5px 0 30px rgba(44,27,78,0.3);
+    transition: left 0.3s ease;
+    padding: 25px 20px;
+    border-right: 5px solid #9b59b6;
+    overflow-y: auto;
+}
+
+.menu-categorias-movil.mostrar {
+    left: 0;
+}
+
+.menu-categorias-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0d0f0;
+}
+
+.menu-categorias-header h3 {
+    color: #2c1b4e;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-categorias-header h3 i {
+    color: #e84393;
+}
+
+.cerrar-categorias {
+    background: #f0e6ff;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    color: #2c1b4e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.cerrar-categorias:hover {
+    background: #e6d4ff;
+    transform: rotate(90deg);
+}
+
+.menu-categorias-botones {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.categoria-movil-btn {
+    background: #f8f2ff;
+    border: none;
+    border-radius: 50px;
+    padding: 18px 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c1b4e;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: 0.2s;
+    border-left: 6px solid transparent;
+}
+
+.categoria-movil-btn i {
+    font-size: 24px;
+    width: 35px;
+}
+
+.categoria-movil-btn:hover {
+    background: #e6d4ff;
+    transform: translateX(5px);
+}
+
+/* Overlay */
+.categorias-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44,27,78,0.5);
+    z-index: 9999;
+    display: none;
+    backdrop-filter: blur(3px);
+}
+
+.categorias-overlay.mostrar {
+    display: block;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .menu-horizontal {
+        display: none !important; /* Ocultamos el menú horizontal */
+    }
+    
+    .categorias-hamburguesa {
+        display: flex; /* Mostramos el botón hamburguesa */
+    }
+}
+
+/* ===== ESTILO PARA SWEETALERT DE GALERÍA ===== */
+.swal-popup-galeria {
+    border-radius: 60px !important;
+    border: 5px solid white !important;
+    box-shadow: 0 25px 50px rgba(44,27,78,0.4) !important;
+    padding: 25px 20px !important;
+}
+
+/* Botones de galería */
+.galeria-btn {
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    font-family: 'Segoe UI', sans-serif !important;
+}
+
+.galeria-btn i {
+    transition: transform 0.3s ease;
+}
+
+.galeria-btn:hover i {
+    transform: scale(1.1);
+}
+
+/* Grid de galería */
+.galeria-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.galeria-item {
+    position: relative;
+    border-radius: 30px;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 1;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.galeria-item:hover {
+    transform: scale(1.03);
+    box-shadow: 0 15px 30px rgba(44,27,78,0.3);
+}
+
+.galeria-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.galeria-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, #2c1b4e, transparent);
+    color: white;
+    padding: 20px 10px 10px;
+    text-align: center;
+    font-weight: 600;
+    transform: translateY(100%);
+    transition: 0.3s;
+}
+
+.galeria-item:hover .galeria-caption {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .galeria-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .swal-popup-galeria {
+        border-radius: 40px !important;
+        padding: 20px 15px !important;
+    }
+}
+/* Asegurar que los botones sean visibles */
+.swal2-popup .galeria-movil-btn {
+    margin: 8px 0;
+    cursor: pointer;
 }
