@@ -278,6 +278,7 @@ window.seleccionarTema = function(id) {
 document.addEventListener('click', function(event) {
     if (!event.target.closest('.menu-item')) {
         cerrarTodosSubmenus();
+        
     }
 });
 
